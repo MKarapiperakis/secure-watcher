@@ -1,9 +1,9 @@
 const nodemailer = require("nodemailer");
 const { BadRequestError } = require("../lib/errors");
 const fs = require("fs");
-module.exports = (filePath, receivers) => {
+module.exports = (filePath, receivers, storePath) => {
   try {
-    main(filePath, receivers).then((response) => {
+    main(filePath, receivers, storePath).then((response) => {
       if (!!response) {
         console.log("Mail sent successfully");
         fs.unlink(filePath, (err) => {
@@ -33,6 +33,7 @@ module.exports = (filePath, receivers) => {
           pass: process.env.PASSWORD_SENDER,
         },
       });
+      let formattedStorePath = `file:///${storePath.replace(/\\/g, "/")}`;
 
       let info = await transporter.sendMail({
         from: `"Secure Watcher Automation Service" <${process.env.EMAIL_SENDER}>`,
@@ -45,6 +46,10 @@ module.exports = (filePath, receivers) => {
           <div style="text-align: center;">
               <p style="font-size: 16px; color: #555;">See the captured image below:</p>
               <img src="cid:capture_image" alt="Captured Image" style="max-width: 100%; height: auto; border: 2px solid #d9534f;">
+          </div>
+         <div style="text-align: center; margin-top: 20px;">
+            <p style="font-size: 16px; color: #333;">Or you can check it directly on your local Windows machine:</p>
+              <p style="font-size: 16px; font-weight: bold; color: #555;">${storePath}</p>
           </div>`,
         attachments: [
           {

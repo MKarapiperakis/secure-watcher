@@ -5,11 +5,19 @@ const environment = process.env.NODE_ENV || "";
 const serverInit = require("./server");
 const chokidar = require("chokidar");
 const notifyAdmin = require("./middlewares/notify-admin");
+const fs = require("fs");
+const path = require("path");
 
 const cors = require("cors");
 const mainErrorHandler = (err) => console.error(err);
 process.on("uncaughtException", mainErrorHandler);
 process.on("unhandledRejection", mainErrorHandler);
+
+const storeFolder = path.join(__dirname, "store");
+
+if (!fs.existsSync(storeFolder)) {
+  fs.mkdirSync(storeFolder, { recursive: true });
+}
 
 serverInit().then((app) => {
   const server = require("http").createServer(app);
@@ -23,12 +31,21 @@ serverInit().then((app) => {
     );
   });
 
-  chokidar.watch("./src/video").on("all", (event, path) => {
+  chokidar.watch("./src/video").on("all", (event, filePath) => {
     if (event === "add" && process.env.NOTIFY_ADMIN == "true") {
-      console.log("here");
+      const fileName = path.basename(filePath);
+      const storePath = path.join(storeFolder, `${Date.now()}_${fileName}`);
 
-      const receivers = process.env.EMAIL_RECEIVERS.split(",");
-      notifyAdmin(path, receivers);
+      fs.copyFile(filePath, storePath, (err) => {
+        if (err) {
+          console.error("Error copying file:", err);
+        } else {
+          console.log(`File copied to ${storePath}`);
+        }
+      });
+
+      const receivers = process.env.EMAIL_RECEIVERS?.split(",") || [];
+      notifyAdmin(filePath, receivers, storePath);
     }
   });
 });
