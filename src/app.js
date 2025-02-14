@@ -31,8 +31,8 @@ serverInit().then((app) => {
     );
   });
 
-  chokidar.watch("./src/video").on("all", (event, filePath) => {
-    if (event === "add" && process.env.NOTIFY_ADMIN == "true") {
+  chokidar.watch("./src/camera/alarm/VF0410870SIJM/").on("add", (filePath) => {
+    if (process.env.NOTIFY_ADMIN == "true") {
       const fileName = path.basename(filePath);
       const storePath = path.join(storeFolder, `${Date.now()}_${fileName}`);
 

@@ -1,20 +1,40 @@
 const nodemailer = require("nodemailer");
 const { BadRequestError } = require("../lib/errors");
 const fs = require("fs");
+const path = require("path");
+
 module.exports = (filePath, receivers, storePath) => {
   try {
     main(filePath, receivers, storePath).then((response) => {
       if (!!response) {
         console.log("Mail sent successfully");
+
         fs.unlink(filePath, (err) => {
           if (err) {
             console.error("Error deleting file:", err);
           } else {
             console.log("File deleted successfully:", filePath);
+
+            const parentFolder = path.dirname(filePath);
+
+            fs.readdir(parentFolder, (err, files) => {
+              if (err) {
+                console.error("Error reading folder:", err);
+              } else if (files.length === 0) {
+                // If empty, delete the parent folder
+                fs.rmdir(parentFolder, (err) => {
+                  if (err) {
+                    console.error("Error deleting folder:", err);
+                  } else {
+                    console.log("Parent folder deleted:", parentFolder);
+                  }
+                });
+              }
+            });
           }
         });
       } else {
-        console.log("error notifying user");
+        console.log("Error notifying user");
         throw new BadRequestError("Bad Request");
       }
     });
