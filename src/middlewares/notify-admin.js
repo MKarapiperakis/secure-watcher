@@ -3,36 +3,11 @@ const { BadRequestError } = require("../lib/errors");
 const fs = require("fs");
 const path = require("path");
 
-module.exports = (filePath, receivers, storePath) => {
+module.exports = (storePath,receivers) => {
   try {
-    main(filePath, receivers, storePath).then((response) => {
+    main(storePath, receivers).then((response) => {
       if (!!response) {
         console.log("Mail sent successfully");
-
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.error("Error deleting file:", err);
-          } else {
-            console.log("File deleted successfully:", filePath);
-
-            const parentFolder = path.dirname(filePath);
-
-            fs.readdir(parentFolder, (err, files) => {
-              if (err) {
-                console.error("Error reading folder:", err);
-              } else if (files.length === 0) {
-                // If empty, delete the parent folder
-                fs.rmdir(parentFolder, (err) => {
-                  if (err) {
-                    console.error("Error deleting folder:", err);
-                  } else {
-                    console.log("Parent folder deleted:", parentFolder);
-                  }
-                });
-              }
-            });
-          }
-        });
       } else {
         console.log("Error notifying user");
         throw new BadRequestError("Bad Request");
@@ -42,7 +17,7 @@ module.exports = (filePath, receivers, storePath) => {
     console.log(`error notifying user: ${error}`);
   }
 
-  async function main(filePath, receivers) {
+  async function main(storePath, receivers) {
     try {
       let transporter = nodemailer.createTransport({
         host: "smtp.gmail.com",
@@ -53,7 +28,6 @@ module.exports = (filePath, receivers, storePath) => {
           pass: process.env.PASSWORD_SENDER,
         },
       });
-      let formattedStorePath = `file:///${storePath.replace(/\\/g, "/")}`;
 
       let info = await transporter.sendMail({
         from: `"Secure Watcher Automation Service" <${process.env.EMAIL_SENDER}>`,
@@ -73,8 +47,8 @@ module.exports = (filePath, receivers, storePath) => {
           </div>`,
         attachments: [
           {
-            filename: filePath.split("/").pop(),
-            path: filePath,
+            filename: storePath.split("/").pop(),
+            path: storePath,
             cid: "capture_image",
           },
         ],
