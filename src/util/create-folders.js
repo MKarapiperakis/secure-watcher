@@ -1,30 +1,23 @@
 const fs = require("fs");
 
-const createFolders = (...args) => {
-  const [storeFolder, cameraFolder, waterMarkFolder] = args;
+const createFolders = (...folders) => {
   let createdFolders = [];
   try {
-    if (!fs.existsSync(storeFolder)) {
-      fs.mkdirSync(storeFolder, { recursive: true });
-      createdFolders.push({ folder: storeFolder });
-    }
-
-    if (!fs.existsSync(cameraFolder)) {
-      fs.mkdirSync(cameraFolder, { recursive: true });
-      createdFolders.push({ folder: cameraFolder });
-    }
-
-    if (!fs.existsSync(waterMarkFolder)) {
-      fs.mkdirSync(waterMarkFolder, { recursive: true });
-      createdFolders.push({ folder: waterMarkFolder });
-    }
+    folders.forEach(folder => {
+      if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder, { recursive: true });
+        createdFolders.push({ folder });
+      }
+    });
   } catch (err) {
-    console.log(`Error creating folders: ${err}`);
+    console.error(`Error creating folders: ${err}`);
   } finally {
-    if (createFolders.length > 0) {
-      console.log("The following folders have been created succesfully:");
+    if (createdFolders.length > 0) {
+      console.log("The following folders have been created successfully:");
       console.table(createdFolders);
-    } else console.log("No folders were created");
+    } else {
+      console.log("No folders were created.");
+    }
   }
 };
 
