@@ -9,7 +9,8 @@ const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
 const cors = require("cors");
-const {createFolders} = require("./util/create-folders")
+const {createFolders} = require("./util/create-folders");
+const { deleteFile } = require("./util/delete-file");
 const mainErrorHandler = (err) => console.error(err);
 process.on("uncaughtException", mainErrorHandler);
 process.on("unhandledRejection", mainErrorHandler);
@@ -83,33 +84,7 @@ serverInit().then((app) => {
                   .then(async () => {
                     console.log("Watermarked image saved:", storePath);
 
-                    fs.unlink(filePath, (err) => {
-                      if (err) {
-                        console.error("Error deleting file:", err);
-                      } else {
-                        console.log("File deleted successfully:", filePath);
-
-                        const parentFolder = path.dirname(filePath);
-
-                        fs.readdir(parentFolder, (err, files) => {
-                          if (err) {
-                            console.error("Error reading folder:", err);
-                          } else if (files.length === 0) {
-                            // If empty, delete the parent folder
-                            fs.rmdir(parentFolder, (err) => {
-                              if (err) {
-                                console.error("Error deleting folder:", err);
-                              } else {
-                                console.log(
-                                  "Parent folder deleted:",
-                                  parentFolder
-                                );
-                              }
-                            });
-                          }
-                        });
-                      }
-                    });
+                    deleteFile(filePath)
                     const receivers =
                       process.env.EMAIL_RECEIVERS?.split(",") || [];
                       notifyAdmin(waterMarkPath, receivers);
