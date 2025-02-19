@@ -9,16 +9,16 @@ const fs = require("fs");
 const path = require("path");
 const sharp = require("sharp");
 const cors = require("cors");
+const {createFolders} = require("./util/create-folders")
 const mainErrorHandler = (err) => console.error(err);
 process.on("uncaughtException", mainErrorHandler);
 process.on("unhandledRejection", mainErrorHandler);
 
 const storeFolder = path.join(__dirname, "store");
+const cameraFolder = path.join(__dirname, "camera");
 const waterMarkFolder = path.join(__dirname, "water-mark");
 
-if (!fs.existsSync(storeFolder)) {
-  fs.mkdirSync(storeFolder, { recursive: true });
-}
+createFolders(storeFolder, cameraFolder, waterMarkFolder)
 
 serverInit().then((app) => {
   const server = require("http").createServer(app);
