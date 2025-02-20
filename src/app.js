@@ -18,7 +18,6 @@ process.on("unhandledRejection", mainErrorHandler);
 const storeFolder = path.join(__dirname, "store");
 const cameraFolder = path.join(__dirname, "camera");
 const waterMarkFolder = path.join(__dirname, "water-mark");
-
 createFolders(storeFolder, cameraFolder, waterMarkFolder)
 
 serverInit().then((app) => {
@@ -38,6 +37,7 @@ serverInit().then((app) => {
   chokidar
     .watch("./src/camera/")
     .on("add", async (filePath) => {
+      createFolders(storeFolder, cameraFolder, waterMarkFolder)
       if (process.env.NOTIFY_ADMIN == "true") {
         try {
           const fileName = path.basename(filePath);
