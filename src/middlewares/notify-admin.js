@@ -2,12 +2,14 @@ const nodemailer = require("nodemailer");
 const { BadRequestError } = require("../lib/errors");
 const fs = require("fs");
 const path = require("path");
+const { deleteFile } = require("../util/delete-file");
 
 module.exports = (storePath,receivers) => {
   try {
     main(storePath, receivers).then((response) => {
       if (!!response) {
         console.log("Mail sent successfully");
+        deleteFile(storePath)
       } else {
         console.log("Error notifying user");
         throw new BadRequestError("Bad Request");
