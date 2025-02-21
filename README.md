@@ -66,7 +66,9 @@ This folder contains the final processed images. These images undergo compressio
 ![image](https://github.com/user-attachments/assets/bb1a63ed-3d17-44e0-9f1a-acc3033c9a76)
 
 
-5. To configure the security camera application for the Vstarcam CS66Q-X18 (model used in this example), you can utilize the desktop application called **Eye4**. Open it and follow the steps outlined below:
+5. **Configure the security camera application**
+   
+- To configure the security camera application for the Vstarcam CS66Q-X18 (model used in this example), you can utilize the desktop application called **Eye4**. Open it and follow the steps outlined below:
     - Click the **gear icon** (settings) next to the camera you wish to configure. This will open the settings menu for that specific camera, allowing you to customize its options
 ![1](https://github.com/user-attachments/assets/230bc41a-45e5-4f21-a815-5c9c36df295f)
     - Enable the alarm by checking the box next to the alarm option and set a new Deployment Time
@@ -76,7 +78,7 @@ This folder contains the final processed images. These images undergo compressio
     - As a final step, click on Options and choose the path where you want to save your images. Once the server is started, a folder named camera should be created automatically. Select this folder to ensure all captured images are stored in the designated location
 ![4](https://github.com/user-attachments/assets/9f209b1e-270f-4c5f-852c-c48f88e853c3)
 
-The Node.js app is compatible with all types of cameras. The key step is to run the project once initially, and then configure your camera to save images directly into the camera directory.
+- The Node.js app is compatible with all types of cameras. The key step is to run the project once initially and then configure your camera to save images directly into the camera directory.
 
 
 ---
