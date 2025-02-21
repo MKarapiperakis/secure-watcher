@@ -2,6 +2,7 @@ const faceapi = require("face-api.js");
 const canvas = require("canvas");
 const fs = require("fs");
 const path = require("path");
+const chalk = require("chalk");
 const { Canvas, Image, ImageData } = canvas;
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 const notifyAdmin = require("../middlewares/notify-admin");
@@ -28,7 +29,7 @@ async function detectFaces(imagePath, outputPath) {
     return;
   }
 
-  console.log("🔍 Processing image:", absPath);
+  console.log(`Processing image: ${chalk.blue.underline.bold(absPath)}`);
 
   try {
     const imgBuffer = fs.readFileSync(absPath);

@@ -1,11 +1,13 @@
 const fs = require("fs");
 const path = require("path");
+const chalk = require("chalk");
+
 const deleteFile = (filePath) => {
     fs.unlink(filePath, (err) => {
         if (err) {
           console.error("Error deleting file:", err);
         } else {
-          console.log("File deleted successfully:", filePath);
+          console.log(`The file ${chalk.blue.underline.bold(filePath)} has been deleted successfully` );
 
           // const parentFolder = path.dirname(filePath);
 

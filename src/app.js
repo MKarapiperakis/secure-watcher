@@ -10,7 +10,7 @@ const sharp = require("sharp");
 const cors = require("cors");
 const { createFolders } = require("./util/create-folders");
 const { deleteFile } = require("./util/delete-file");
-const {loadModels, detectFaces} = require("./util/face-api")
+const { loadModels, detectFaces } = require("./util/face-api");
 const mainErrorHandler = (err) => console.error(err);
 process.on("uncaughtException", mainErrorHandler);
 process.on("unhandledRejection", mainErrorHandler);
@@ -25,10 +25,7 @@ serverInit().then(async (app) => {
   await loadModels();
   server.listen(PORT, () => {
     console.log(
-      "Up & running on http://localhost:" +
-        chalk.blue.underline.bold(PORT) +
-        " for environment: " +
-        chalk.green.bold(environment)
+      "Up & running on http://localhost:" + chalk.blue.underline.bold(PORT)
     );
   });
 
@@ -36,7 +33,7 @@ serverInit().then(async (app) => {
 
   chokidar.watch("./src/camera/").on("add", async (filePath) => {
     createFolders(storeFolder, cameraFolder, waterMarkFolder);
-   
+
     if (process.env.NOTIFY_ADMIN == "true") {
       try {
         const fileName = path.basename(filePath);
@@ -81,10 +78,14 @@ serverInit().then(async (app) => {
                 .jpeg({ mozjpeg: true })
                 .toFile(waterMarkPath)
                 .then(async () => {
-                  console.log("Watermarked image saved:", storePath);
+                  console.log(
+                    `Watermarked image ${chalk.blue.underline.bold(
+                      storePath
+                    )} has been saved`
+                  );
 
                   deleteFile(filePath);
-                  await detectFaces(waterMarkPath,waterMarkPath)
+                  await detectFaces(waterMarkPath, waterMarkPath);
                 })
                 .catch((err) => {
                   console.error("Error processing image:", err);
