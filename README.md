@@ -1,5 +1,6 @@
 # Secure Watcher
-![github-logo](https://github.com/user-attachments/assets/464617bd-b9b3-4e9a-879e-c0f1bc8b1512)
+
+ <img src="https://github.com/user-attachments/assets/464617bd-b9b3-4e9a-879e-c0f1bc8b1512" alt="logo">
 
 Secure Watcher is a Node.js application that enhances security camera monitoring by processing captured images, applying watermarks and utilizing face recognition for intelligent notifications.
 
@@ -18,13 +19,12 @@ Secure Watcher is a Node.js application that enhances security camera monitoring
  
      <img src="https://github.com/user-attachments/assets/eeefeaed-f5b5-4965-b8aa-ac63dcb00943" alt="face-detection-example">
     
-
 - **Email Notifications**  
   - If no face is detected, sends the watermarked image via email using `nodemailer`.  
   - If a face is detected, the processed image (with age, gender, and emotions) is sent via email.
 
-![image](https://github.com/user-attachments/assets/78fd4de9-aa74-4af3-8078-fdda7c1efccd)
-![image](https://github.com/user-attachments/assets/b85d5b76-b6f6-4f85-8a5c-203dcd79441d)
+<img src="https://github.com/user-attachments/assets/78fd4de9-aa74-4af3-8078-fdda7c1efccd" alt="model">
+<img src="https://github.com/user-attachments/assets/b85d5b76-b6f6-4f85-8a5c-203dcd79441d" alt="email">
 
 ## Technologies Used
 
@@ -69,8 +69,7 @@ Processed images are moved here as a backup. Once the images are stored in this 
 - water-mark:
 This folder contains the final processed images. These images undergo compression (using the sharp package), watermarking and face recognition (using the face-api package) when applicable. The images in this folder are attached to the email notifications sent to recipients. After the email is sent, the images are deleted from this folder as well
 
-![image](https://github.com/user-attachments/assets/bb1a63ed-3d17-44e0-9f1a-acc3033c9a76)
-
+<img src="https://github.com/user-attachments/assets/bb1a63ed-3d17-44e0-9f1a-acc3033c9a76" alt="folders-generation">
 
 5. **Configure the security camera application**
    
