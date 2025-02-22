@@ -4,8 +4,10 @@ const fs = require("fs");
 const path = require("path");
 const chalk = require("chalk");
 const { Canvas, Image, ImageData } = canvas;
+const { deleteFile } = require("../util/delete-file");
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 const notifyAdmin = require("../middlewares/notify-admin");
+require("dotenv").config();
 
 const MODEL_URL =
   "https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights";
@@ -103,9 +105,20 @@ async function detectFaces(imagePath, outputPath) {
       const stream = imageCanvas.createPNGStream();
       stream.pipe(outStream);
 
-      outStream.on("finish", () => notifyAdmin(outputPath, receivers));
+      outStream.on("finish", () => {
+        if (process.env.NOTIFY_ADMIN == "true")
+          notifyAdmin(outputPath, receivers);
+        else {
+          console.log("The process of face recognition has been completed");
+          deleteFile(imagePath);
+        }
+      });
     } else {
-      notifyAdmin(imagePath, receivers);
+      if (process.env.NOTIFY_ADMIN == "true") notifyAdmin(imagePath, receivers);
+      else {
+        console.log("No faces were spotted");
+        deleteFile(imagePath);
+      }
     }
   } catch (err) {
     console.log("error processing image:", err);
