@@ -16,7 +16,8 @@ Secure Watcher is a Node.js application that enhances security camera monitoring
   - Uses `face-api.js` to check if a face is present in the image.  
   - If a face is detected, it extracts details such as **age, gender and emotions** and overlays them on the image.
  
-    ![image](https://github.com/user-attachments/assets/eeefeaed-f5b5-4965-b8aa-ac63dcb00943)
+     <img src="https://github.com/user-attachments/assets/eeefeaed-f5b5-4965-b8aa-ac63dcb00943" alt="face-detection-example">
+    
 
 - **Email Notifications**  
   - If no face is detected, sends the watermarked image via email using `nodemailer`.  
