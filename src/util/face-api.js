@@ -5,25 +5,24 @@ const path = require("path");
 const chalk = require("chalk");
 const { Canvas, Image, ImageData } = canvas;
 const { deleteFile } = require("../util/delete-file");
+const { findMostSimilar } = require("../util/face-similarity");
 faceapi.env.monkeyPatch({ Canvas, Image, ImageData });
 const notifyAdmin = require("../middlewares/notify-admin");
 require("dotenv").config();
-
+let target = [];
 const MODEL_URL =
   "https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights";
 const receivers = process.env.EMAIL_RECEIVERS?.split(",") || [];
 
 async function loadModels() {
-  console.log("Please wait while loading models ...");
   await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL);
   await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
   await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
   await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL);
   await faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL);
-  console.log("The models have been loaded successfully from the URL");
 }
 
-async function detectFaces(imagePath, outputPath) {
+async function detectFaces(imagePath, outputPath, descriptors, faceRepoFolder) {
   const absPath = path.resolve(imagePath).replace(/\\/g, "/");
 
   if (!fs.existsSync(absPath)) {
@@ -52,6 +51,9 @@ async function detectFaces(imagePath, outputPath) {
     console.log(`✅ Faces detected: ${detections.length}`);
 
     if (detections.length > 0) {
+      if (detections.length == 1) {
+        target = detections[0].descriptor;
+      }
       detections.forEach(
         ({
           detection,
@@ -105,9 +107,18 @@ async function detectFaces(imagePath, outputPath) {
       const stream = imageCanvas.createPNGStream();
       stream.pipe(outStream);
 
-      outStream.on("finish", () => {
+      //Face(s) detected
+      outStream.on("finish", async () => {
+        let relatedImage = {}
+        if (process.env.FACE_SIMILARITY == "true" && target.length > 0) {
+          const match = findMostSimilar(target, descriptors);
+          if(match != null)
+            relatedImage = match;
+          console.log(`match: ${JSON.stringify(match)}`);
+        }
+
         if (process.env.NOTIFY_ADMIN == "true")
-          notifyAdmin(outputPath, receivers);
+          notifyAdmin(outputPath, receivers, relatedImage, faceRepoFolder);
         else {
           console.log("The process of face recognition has been completed");
           deleteFile(imagePath);
