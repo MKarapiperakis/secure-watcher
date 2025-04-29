@@ -18,6 +18,12 @@ Secure Watcher is a Node.js application that enhances security camera monitoring
   - If a face is detected, it extracts details such as **age, gender and emotions** and overlays them on the image.
  
      <img src="https://github.com/user-attachments/assets/eeefeaed-f5b5-4965-b8aa-ac63dcb00943" alt="face-detection-example">
+
+- **Face Similarity**
+  - During initialization, a folder named `face-repository` is created. This folder is used to store images of individuals, enabling the application to search for similar faces whenever a new face is captured.
+  - Uses `face-api.js` to extract facial feature vectors from the captured image. It then compares these vectors with those from images stored in the `face-repository` folder using Euclidean distance and returns the most similar image — if one is found.
+     
+     <img src="https://github.com/user-attachments/assets/358ba7b8-c328-4569-9cc4-db00c9587b65" alt="face-similarity-example">
     
 - **Email Notifications**  
   - If no face is detected, sends the watermarked image via email using `nodemailer`.  
@@ -25,6 +31,14 @@ Secure Watcher is a Node.js application that enhances security camera monitoring
 
 <img src="https://github.com/user-attachments/assets/78fd4de9-aa74-4af3-8078-fdda7c1efccd" alt="model">
 <img src="https://github.com/user-attachments/assets/b85d5b76-b6f6-4f85-8a5c-203dcd79441d" alt="email">
+
+If `face-similarity` mode is enabled via the `.env` file and a matching image is found in the `face-repository` folder, that image is also included in the email notification:
+
+<img src="https://github.com/user-attachments/assets/84730608-6bde-4595-a7c1-05b6c3732904" alt="model">
+
+# Note: 
+The application uses the `face-api.js` package to extract vectors from stored images. This process can become time-consuming when handling a large number of files. To improve performance, vectors can be precomputed periodically and cached in a buffer, instead of re-extracting them each time the application is initialized.
+
 
 ## Technologies Used
 
@@ -55,6 +69,7 @@ EMAIL_SENDER='your-email@gmail.com'   # Gmail account for sending email notifica
 PASSWORD_SENDER='your-app-password'   # Unique Gmail app password
 NOTIFY_ADMIN='true'                  # Set to true to receive email notifications, false to only store images
 EMAIL_RECEIVERS='receiver1@example.com,receiver2@example.com'  # Comma-separated list of BCC recipients
+FACE_SIMILARITY=true #Set this to true to enable face similarity scanning within the face-repository folder.
 ```
 4. **Start the server**
   ```sh
