@@ -10,6 +10,7 @@ const cors = require("cors");
 const { createFolders } = require("./util/create-folders");
 const { deleteFile } = require("./util/delete-file");
 const { loadModels, detectFaces } = require("./util/face-api");
+const { faceSimilarity } = require("./util/face-similarity");
 const mainErrorHandler = (err) => console.error(err);
 process.on("uncaughtException", mainErrorHandler);
 process.on("unhandledRejection", mainErrorHandler);
@@ -17,16 +18,53 @@ process.on("unhandledRejection", mainErrorHandler);
 const storeFolder = path.join(__dirname, "store");
 const cameraFolder = path.join(__dirname, "camera");
 const waterMarkFolder = path.join(__dirname, "water-mark");
-createFolders(storeFolder, cameraFolder, waterMarkFolder);
+const faceRepoFolder = path.join(__dirname, "face-repository");
+let descriptors = null;
+createFolders(storeFolder, cameraFolder, waterMarkFolder, faceRepoFolder);
+
+const imageFiles = fs
+  .readdirSync(faceRepoFolder)
+  .filter((file) => {
+    const ext = path.extname(file).toLowerCase();
+    return [".jpg", ".jpeg", ".png"].includes(ext);
+  })
+  .map((file) => path.join(faceRepoFolder, file));
 
 serverInit().then(async (app) => {
   const server = require("http").createServer(app);
-  await loadModels();
+  try {
+    console.log(chalk.blue("[1] Loading models ..."));
+    await loadModels();
+    console.log(
+      chalk.green("[1] The models have been loaded successfully from the URL")
+    );
+  } catch (err) {
+    console.error("error loading models: ", err);
+  }
+
   server.listen(PORT, () => {
     console.log(
       "Up & running on http://localhost:" + chalk.blue.underline.bold(PORT)
     );
   });
+
+  // If face similarity mode is enabled, scan the images in the 'face-repository' folder
+  // and store the corresponding vectors (descriptors) in the appropriate array.
+  if (process.env.FACE_SIMILARITY == "true") {
+    try {
+      console.log(chalk.blue("[2] Processing face repository images ..."));
+      if (descriptors === null) {
+        descriptors = await faceSimilarity(imageFiles);
+        console.log(
+          chalk.green(
+            "[2] The face repository images have been loaded successfully from the local folder"
+          )
+        );
+      }
+    } catch (e) {
+      console.log("error creating descriptors", e);
+    }
+  }
 
   const watermarkImage = path.join(__dirname, "/assets/logo/logo_3.png");
 
@@ -83,7 +121,7 @@ serverInit().then(async (app) => {
                 );
 
                 deleteFile(filePath);
-                await detectFaces(waterMarkPath, waterMarkPath);
+                await detectFaces(waterMarkPath, waterMarkPath, descriptors, faceRepoFolder);
               })
               .catch((err) => {
                 console.error("Error processing image:", err);
